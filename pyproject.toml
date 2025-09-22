@@ -1,12 +1,113 @@
 [project]
-name = "game-config-hub-service"
+name = "config-codex"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13.7"
 dependencies = [
+    "django>=5.2.6",
     "django-ninja>=1.4.3",
-    "dotenv>=0.9.9",
     "psycopg>=3.2.10",
     "python-dotenv>=1.0.0",
+    "pyjwt>=2.8.0",
+    "bcrypt>=4.1.0",
+    "pydantic[email]>=2.5.0",
+    "django-cors-headers>=4.3.0",
+    "django-ratelimit>=4.1.0",
+]
+
+[dependency-groups]
+dev = [
+    "daphne>=4.2.1",
+    "django-debug-toolbar>=6.0.0",
+    "django-stubs>=5.2.5",
+    "djangorestframework-stubs>=3.16.3",
+    "mypy>=1.18.2",
+    "ruff>=0.13.1",
+    "pytest>=8.0.0",
+    "pytest-django>=4.8.0",
+    "pytest-cov>=4.0.0",
+    "factory-boy>=3.3.0",
+    "faker>=22.0.0",
+    "django-extensions>=3.2.0",
+    "types-pygments>=2.19.0.20250809",
+    "types-pexpect>=4.9.0.20250916",
+]
+prod = ["daphne>=4.2.1", "gunicorn>=21.2.0", "whitenoise>=6.6.0"]
+test = [
+    "pytest>=8.0.0",
+    "pytest-django>=4.8.0",
+    "pytest-cov>=4.0.0",
+    "factory-boy>=3.3.0",
+    "faker>=22.0.0",
+]
+
+# --- Ruff Configuration ---
+[tool.ruff]
+line-length = 88
+# Assume Python 3.11+
+target-version = "py311"
+
+[tool.ruff.lint]
+# "ANN" = flake8-annotations
+# "TCH" = flake8-type-checking (helps avoid circular import issues)
+select = ["E", "F", "W", "I", "UP", "ANN", "TCH"]
+ignore = ["ANN101", "ANN102"]
+exclude = ["*/migrations/*", "*/settings/*"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+# --- Mypy Configuration ---
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+python_version = "3.11"
+non_interactive = false
+strict = true
+explicit_package_bases = true
+exclude = ["/migrations/*", "/settings/*"]
+
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+check_untyped_defs = true
+
+# Module path mappings
+namespace_packages = true
+
+[tool.django-stubs]
+django_settings_module = "core.settings"
+
+# --- Pytest Configuration ---
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "core.settings.testing"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+addopts = [
+    "--reuse-db",
+    "--cov=apps",
+    "--cov-report=html",
+    "--cov-report=term-missing",
+    "--cov-fail-under=80",
+]
+testpaths = ["apps"]
+
+# --- Coverage Configuration ---
+[tool.coverage.run]
+source = ["apps"]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "*/venv/*",
+    "manage.py",
+    "*/settings/*",
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
 ]

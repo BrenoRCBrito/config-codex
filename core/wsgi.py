@@ -1,5 +1,5 @@
 """
-WSGI config for game_config_hub_service project.
+WSGI config for core project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,8 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'game_config_hub_service.settings')
+environment = os.getenv("DJANGO_ENVIRONMENT", "production")
+settings_module = f"core.settings.{environment}"
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings_module)
 
 application = get_wsgi_application()

@@ -1,5 +1,5 @@
 """
-URL configuration for game_config_hub_service project.
+URL configuration for core project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
@@ -14,9 +14,30 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path
 
+from .main_api import api
+
+_auth_setup = False
+
+
+def setup_auth() -> None:
+    """Setup authentication router - called once during URL configuration."""
+    global _auth_setup
+    if _auth_setup:
+        return
+
+    from apps.identity.api import auth_router
+
+    api.add_router("/auth", auth_router)
+    _auth_setup = True
+
+
+setup_auth()
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
+    path("api/", api.urls),
 ]
